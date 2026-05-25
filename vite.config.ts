@@ -1,22 +1,15 @@
-import vue from "@vitejs/plugin-vue";
-import fs from "node:fs";
-import UnoCSS from "unocss/vite";
 import { defineConfig } from "vite";
 import electron from "vite-plugin-electron/simple";
 import pkg from "./package.json";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
-  fs.rmSync("dist-electron", { recursive: true, force: true });
-
   const isServe = command === "serve";
   const isBuild = command === "build";
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
 
   return {
     plugins: [
-      vue(),
-      UnoCSS(),
       electron({
         main: {
           // Shortcut of `build.lib.entry`
@@ -64,19 +57,15 @@ export default defineConfig(({ command }) => {
             },
           },
         },
-        // Polyfill the Electron and Node.js API for Renderer process.
-        // If you want to use Node.js in Renderer process, the `nodeIntegration` needs to be enabled in the Main process.
-        // See 👉 https://github.com/electron-vite/vite-plugin-electron-renderer
-        renderer: {},
       }),
     ],
+    // Vite dev server (needed for vite-plugin-electron to build main & preload)
     server:
       process.env.VSCODE_DEBUG &&
       (() => {
-        const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
         return {
-          host: url.hostname,
-          port: +url.port,
+          host: "127.0.0.1",
+          port: 3344,
         };
       })(),
     clearScreen: false,

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(pnpm install)",
+      "PowerShell(pnpm approve-builds esbuild)"
+    ]
+  }
+}
