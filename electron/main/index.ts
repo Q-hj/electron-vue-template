@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell } from "electron";
+import { app, BrowserWindow, dialog, ipcMain, Menu, shell } from "electron";
 import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
@@ -81,7 +81,27 @@ async function createWindow() {
     return { action: "deny" };
   });
   // win.webContents.on('will-navigate', (event, url) => { }) #344
+
+  // Confirm before quitting
+  win.on("close", (e) => {
+    const response = dialog.showMessageBoxSync(win!, {
+      type: "warning",
+      title: "提示",
+      message: "是否退出应用？",
+      buttons: ["取消", "退出"],
+      cancelId: 0,
+      defaultId: 1,
+    });
+
+    // console.log("close", response);
+
+    if (response !== 1) {
+      e.preventDefault();
+    }
+  });
 }
+
+Menu.setApplicationMenu(null);
 
 app.whenReady().then(createWindow);
 
